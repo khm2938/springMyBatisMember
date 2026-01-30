@@ -14,4 +14,5 @@ public interface MemberService {
 	List<Member> list() throws Exception;
 	Member read(Member member) throws Exception;
 	int update(Member member) throws Exception;
+	List<Member> search(Member member) throws Exception;
 }

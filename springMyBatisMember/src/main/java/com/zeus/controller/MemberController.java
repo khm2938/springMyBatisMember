@@ -101,49 +101,43 @@ public class MemberController {
 		try {
 			int count =  memberService.update(member);
 			if (count > 0) {
-				model.addAttribute("message", "%s님의 게시글 수정성공".formatted(member.getName()));
+				model.addAttribute("message", "%s님의 회원정보를 수정하였습니다.".formatted(member.getName()));
 				return "member/success";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		model.addAttribute("message", "%s님의 게시글 수정실패".formatted(member.getName()));
+		model.addAttribute("message", "%s님의 회원정보 수정실패".formatted(member.getName()));
 		return "member/failed";
 	}
 	
-	/*
-	@GetMapping("/delete")
-	public String boardDelete(Board board, Model model) {
-		log.info("boardDelete board= " + board.toString());
+		@GetMapping("/delete")
+	public String memberDelete(Member member, Model model) {
+		log.info("memberDelete member= " + member.toString());
 		try {
-			boardService.delete(board);
-			model.addAttribute("board", board);
+			memberService.delete(member);
+			model.addAttribute("member", member);
 		} catch (Exception e) {
 			e.printStackTrace();
-			model.addAttribute("message", "%s 님의 게시글 삭제실패하였습니다.".formatted(board.getWriter()));
-			return "board/failed";
+			model.addAttribute("message", "%s 님의 회원정보 삭제실패하였습니다.".formatted(member.getName()));
+			return "member/failed";
 		}
-		model.addAttribute("message", "%d번 게시글이 삭제되었습니다.".formatted(board.getNo()));
-		return "board/success";
+		model.addAttribute("message", "%d번 회원이 성공적으로 탈퇴되었습니다.".formatted(member.getNo()));
+		return "member/success";
 	}
-
-	
-
-	
-	
+		
 	@GetMapping("/search")
-	public String boardSearch(Board board, Model model) {
-	    log.info("boardSearch board"+board.toString());
+	public String memberSearch(Member member, Model model) {
+	    log.info("memberSearch member"+member.toString());
 	    try {
-	        List<Board> boardList = boardService.search(board);
-	        model.addAttribute("boardList", boardList);
+	        List<Member> memberList = memberService.search(member);
+	        model.addAttribute("memberList", memberList);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-
-	    return "board/boardList";
+	    return "member/memberList";
 	}
-	*/
+	
 }
 	
 
