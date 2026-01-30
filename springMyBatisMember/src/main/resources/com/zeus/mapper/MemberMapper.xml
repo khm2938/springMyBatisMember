@@ -1,5 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeus.mapper.MemberMapper">
-	
+
+    <resultMap type="Member" id="memberMap">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="pw" column="pw" />
+        <result property="name" column="name" />
+        <result property="regDate" column="regdate" />
+        <result property="modDate" column="moddate" />
+        <collection property="authList" resultMap="authMap" /> <!--한명의 회원이 여러개의 권한을 가질수 있음, 권한을 authList에 담을것이다. 구체적인 규칙은 authMap에 따름 -->
+    </resultMap>
+
+    <resultMap type="MemberAuth" id="authMap">
+        <result property="userNo" column="no" /> 
+        <result property="auth" column="auth" />
+    </resultMap>
+
+    <select id="read" resultMap="memberMap">
+        SELECT m.no, 
+               m.id, 
+               m.pw, 
+               m.name, 
+               m.regdate, 
+               m.moddate, 
+               a.auth
+        FROM MYBATISMEMBER m INNER OUTER JOIN MYBATISMEMBERAUTH a ON m.no = a.no
+        WHERE m.no = #{no}
+    </select>
+
+    <select id="list" resultMap="memberMap">
+        SELECT no, id, pw, name, regDate FROM MYBATISMEMBER
+        ORDER BY regDate DESC
+    </select>
+
+    <update id="update">
+        UPDATE MYBATISMEMBER
+        SET name = #{name}
+        WHERE no = #{no}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM MYBATISMEMBER
+        WHERE no = #{no}
+    </delete>
+
+    <delete id="deleteAuth">
+        DELETE FROM MYBATISMEMBERAUTH
+        WHERE no = #{no}
+    </delete>
+
+	<!-- 데이터베이스에서 기본키를 인수로 전달한 자바빈의 프로퍼티를 통해 취득한다. --> 
+	<!-- <insert id="create" useGeneratedKeys="true" keyProperty="userNo"> --> 
+    <insert id="create" parameterType="Member">
+        <selectKey keyProperty="userNo" resultType="int" order="BEFORE">
+            SELECT mybatismember_seq.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO MYBATISMEMBER (no, id, pw, name)
+        VALUES (#{userNo}, #{id}, #{pw}, #{name})
+    </insert>
+
+    <insert id="createAuth">
+        INSERT INTO MYBATISMEMBERAUTH (no, auth)
+        VALUES (#{userNo}, #{auth})
+    </insert>
+
 </mapper>
