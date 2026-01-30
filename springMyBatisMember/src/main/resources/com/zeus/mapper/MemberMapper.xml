@@ -22,30 +22,54 @@
                m.id, 
                m.pw, 
                m.name, 
-               m.regdate, 
-               m.moddate, 
+               m.regdate AS "regDate"
                a.auth
         FROM MYBATISMEMBER m 
         LEFT OUTER JOIN MYBATISMEMBERAUTH a ON m.no = a.no
-        WHERE m.no = #{no}
+        WHERE m.no = #{no} and m.enabled = '1'
     </select>
 
     <select id="list" resultMap="memberMap">
         SELECT no, id, pw, name
-        FROM MYBATISMEMBER
-        ORDER BY no DESC
+        FROM MYBATISMEMBER 
+        WHERE enabled = '1'
+        ORDER BY regDate DESC
+    </select>
+    
+    <select id="search" resultType="Member">
+        SELECT * FROM MYBATISMEMBER 
+        <where>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'id'">
+                        AND ID LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'name'">
+                        AND NAME LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <otherwise>
+                        AND NAME LIKE '%' || #{keyword} || '%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        AND ENABLED = '1' ORDER BY no DESC
     </select>
 
     <update id="update">
         UPDATE MYBATISMEMBER
         SET name = #{name}, 
         pw = #{pw} 
-        WHERE no = #{no}
+        WHERE no = #{no} and enabled = '1'
     </update>
 
+	<!-- Soft Delete -->
     <delete id="delete">
-        DELETE FROM MYBATISMEMBER
+    	UPDATE MYBATISMEMBER 
+    	SET enabled = '0' 
         WHERE no = #{no}
+		<!-- Hard Delete => DELETE FROM MYBATISMEMBER WHERE no = #{no} -->        
+        
     </delete>
 
     <delete id="deleteAuth">
